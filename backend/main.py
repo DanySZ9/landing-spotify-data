@@ -2,8 +2,9 @@
 main.py — Punto de entrada del backend (la "puerta" del servidor).
 
 PROPÓSITO
-    Crear la aplicación web con FastAPI y exponer la única ruta pública del
-    proyecto: ``POST /api/analizar``. Es el único archivo que "habla HTTP";
+    Crear la aplicación web con FastAPI y exponer sus rutas: ``POST /api/analizar``
+    (el análisis) y ``GET /api/salud`` (comprobación de que el servidor está vivo).
+    Es el único archivo que "habla HTTP";
     el resto de módulos solo trabajan con datos de Python/pandas.
 
 RESPONSABILIDAD
@@ -33,8 +34,10 @@ INFORMACIÓN QUE DEVUELVE (JSON)
     En caso de error: ``{"detail": "mensaje"}`` con código 400 o 500.
 
 CUÁNDO MODIFICARLO
-    - Para agregar una nueva ruta (endpoint), p. ej. ``GET /api/salud``.
-    - Para cambiar los orígenes permitidos por CORS (al desplegar en un dominio real).
+    - Para agregar una nueva ruta (endpoint).
+    - Para cambiar cómo se configuran los orígenes CORS. Para cambiar QUÉ
+      orígenes se permiten no hace falta tocar el código: basta con la variable
+      de entorno ``ALLOWED_ORIGINS``.
     - Para cambiar cómo se reportan los errores o agregar límites de tamaño de subida.
     - NO es el lugar para agregar cálculos o gráficos nuevos (ver analysis.py).
 
@@ -49,14 +52,15 @@ CONCEPTOS CLAVE (explicados en detalle en docs/GLOSARIO.md)
       un origen (p. ej. localhost:5173) llame a un servidor de otro origen
       (localhost:8000) salvo que el servidor lo autorice explícitamente.
 """
+import logging
+import os
+
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import ValidationError
 
 from analysis import analizar
 from data import Filtros, aplicar_filtros, cargar_historial, opciones_disponibles, preparar
-
-import logging
 
 # "Logger": canal para escribir mensajes de diagnóstico en la consola del servidor.
 # Solo se usa para registrar errores inesperados (ver el último ``except``).
@@ -66,18 +70,40 @@ log = logging.getLogger("spotify-stats")
 # ``uvicorn main:app``  ->  "archivo main.py, variable app".
 app = FastAPI()
 
-# Middleware CORS: autoriza al frontend (servido por Vite en el puerto 5173)
-# a llamar a este backend desde el navegador.
-#   - allow_origins: direcciones desde las que se aceptan peticiones.
-#                    Al desplegar hay que agregar aquí el dominio real del frontend.
-#   - allow_methods: solo se acepta POST, que es el único método que usa la API.
+# Orígenes permitidos por CORS, leídos de la VARIABLE DE ENTORNO ``ALLOWED_ORIGINS``
+# (valores separados por comas, sin barra final). Así el mismo código sirve en
+# desarrollo y en producción cambiando solo la configuración del servidor:
+#   - En tu PC no hace falta definirla: se usan los orígenes de Vite (puerto 5173).
+#   - En Render: ALLOWED_ORIGINS=https://tu-frontend.onrender.com
+ORIGENES_DESARROLLO = "http://localhost:5173,http://127.0.0.1:5173"
+ORIGENES = [
+    o.strip().rstrip("/")   # tolera espacios y una barra final escrita por error
+    for o in os.getenv("ALLOWED_ORIGINS", ORIGENES_DESARROLLO).split(",")
+    if o.strip()            # ignora entradas vacías (p. ej. una coma al final)
+]
+
+# Middleware CORS: autoriza al frontend a llamar a este backend desde el navegador.
+#   - allow_origins: direcciones desde las que se aceptan peticiones (ver arriba).
+#   - allow_methods: solo POST, que es el único método que el navegador necesita.
+#                    (/api/salud usa GET, pero la consulta Render, no el navegador).
 #   - allow_headers: se permite cualquier cabecera HTTP en la petición.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=ORIGENES,
     allow_methods=["POST"],
     allow_headers=["*"],
 )
+
+
+@app.get("/api/salud")
+def salud():
+    """Comprobación de salud ("health check").
+
+    Render (u otro hosting) llama periódicamente a esta ruta para saber si el
+    servidor está vivo; si no responde, lo reinicia. No hace ningún cálculo.
+    Devuelve: ``{"ok": True}``.
+    """
+    return {"ok": True}
 
 
 # El decorador ``@app.post(...)`` registra la función de abajo como el

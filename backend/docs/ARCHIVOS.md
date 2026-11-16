@@ -6,7 +6,7 @@ El código fuente contiene el mismo resumen en su comentario inicial.
 
 Índice: [main.py](#mainpy) · [data.py](#datapy) · [analysis.py](#analysispy) ·
 [graficos.py](#graficospy) · [tablas.py](#tablaspy) · [etiquetas.py](#etiquetaspy) ·
-[requirements.txt](#requirementstxt) · [package-lock.json](#package-lockjson)
+[requirements.txt](#requirementstxt)
 
 ---
 
@@ -14,13 +14,13 @@ El código fuente contiene el mismo resumen en su comentario inicial.
 
 | Pregunta | Respuesta |
 |---|---|
-| **Propósito** | Punto de entrada: crea la aplicación FastAPI y expone `POST /api/analizar`. |
+| **Propósito** | Punto de entrada: crea la aplicación FastAPI y expone `POST /api/analizar` y `GET /api/salud`. |
 | **Responsabilidad** | Todo lo relacionado con HTTP: configurar CORS, recibir archivos y filtros, validar los filtros, llamar al resto de módulos en orden y convertir errores en respuestas 400/500. No hace cálculos. |
 | **Usa** | `data.py` (`Filtros`, `cargar_historial`, `preparar`, `opciones_disponibles`, `aplicar_filtros`), `analysis.py` (`analizar`). Librerías: FastAPI, Pydantic, logging. |
 | **Recibe** | Petición multipart con `archivos` (lista de `UploadFile`) y `filtros` (texto JSON). |
 | **Procesa** | Valida filtros → lee bytes → carga → prepara → opciones → filtra → analiza. |
 | **Devuelve** | JSON `{opciones, ignorados, resumen, graficos, tablas}` o `{detail}` con 400/500. |
-| **Modificar cuando…** | Se agregue otra ruta; se despliegue en un dominio real (CORS); se quiera limitar tamaño de subida, añadir autenticación, *rate limiting* o cambiar mensajes de error. |
+| **Modificar cuando…** | Se agregue otra ruta; se quiera limitar tamaño de subida, añadir autenticación, *rate limiting* o cambiar mensajes de error. Para cambiar los dominios permitidos por CORS **no** hace falta tocarlo: se usa la variable de entorno `ALLOWED_ORIGINS`. |
 
 **Funciones / objetos**
 
@@ -28,7 +28,9 @@ El código fuente contiene el mismo resumen en su comentario inicial.
 |---|---|
 | `app` | La aplicación FastAPI; Uvicorn la arranca con `uvicorn main:app`. |
 | `log` | Logger para registrar errores inesperados en la consola. |
-| `analizar_historial(archivos, filtros)` | El endpoint. Es `async` porque espera la lectura de cada archivo. |
+| `ORIGENES` | Lista de orígenes CORS, leída de `ALLOWED_ORIGINS` (o los de desarrollo si no existe). Ignora espacios, entradas vacías y barras finales. |
+| `salud()` | `GET /api/salud`: devuelve `{"ok": true}`. La usa Render como *health check*. |
+| `analizar_historial(archivos, filtros)` | El endpoint principal. Es `async` porque espera la lectura de cada archivo. |
 
 ---
 
@@ -181,19 +183,10 @@ El código fuente contiene el mismo resumen en su comentario inicial.
 | **Propósito** | Listar las librerías de Python que necesita el backend. |
 | **Contenido** | `fastapi` (framework web), `uvicorn[standard]` (servidor), `python-multipart` (necesario para recibir archivos/formularios), `pandas` (análisis), `plotly` (gráficos). |
 | **Usa / lo usa** | `pip install -r requirements.txt`. |
-| **Modificar cuando…** | Se agregue o quite una librería, o se quieran fijar versiones (recomendado, ver `HALLAZGOS.md`). |
+| **Modificar cuando…** | Se agregue o quite una librería, o se actualice una versión. Las versiones están **fijas** (`==`) para que Render instale exactamente las que se probaron; para actualizar, cambia el número, prueba en local y despliega. |
 
-Versiones con las que se verificó el funcionamiento de esta documentación:
-Python 3.15, FastAPI 0.162.2, pandas 3.1.1, Plotly 7.1.0.
-
----
-
-## `package-lock.json`
-
-| Pregunta | Respuesta |
-|---|---|
-| **Propósito** | Ninguno en el backend. Es un archivo de npm (Node.js) que se generó probablemente al ejecutar `npm` por error dentro de esta carpeta. Está vacío (`"packages": {}`). |
-| **Modificar cuando…** | Se puede eliminar sin efecto alguno (ver `HALLAZGOS.md`). |
+Versiones fijadas (probadas en local con Python 3.15): FastAPI 0.162.2,
+Uvicorn 0.54.0, python-multipart 0.0.33, pandas 3.1.1, Plotly 7.1.0.
 
 ---
 

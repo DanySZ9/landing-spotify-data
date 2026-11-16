@@ -42,6 +42,8 @@ sencilla de un solo endpoint; no necesita más.
 ### Endpoint (o ruta)
 Una puerta concreta de la API: **método + dirección**. Este proyecto tiene uno:
 `POST /api/analizar`, definido en `main.py` con `@app.post("/api/analizar")`.
+Hay un segundo endpoint auxiliar, `GET /api/salud`, que solo confirma que el
+servidor está vivo.
 
 ### Router
 En proyectos grandes, los endpoints se agrupan en "routers" (archivos separados
@@ -167,9 +169,14 @@ Valores de configuración que se leen del sistema operativo en lugar de
 escribirse en el código (p. ej. `ALLOWED_ORIGINS`, claves secretas, URLs). Así
 el mismo código funciona en desarrollo y en producción cambiando solo la
 configuración, y los secretos no quedan en el repositorio.
-**El backend actualmente no usa ninguna**: los orígenes de CORS están escritos
-en `main.py`. El frontend sí usa una: `VITE_API_URL` (en `frontend/src/api.js`),
-que indica la dirección del backend.
+En este proyecto:
+- **Backend**: `ALLOWED_ORIGINS` (dominios autorizados por CORS, en `main.py`) y,
+  en Render, `PORT` (lo define Render) y `PYTHON_VERSION`.
+- **Frontend**: `VITE_API_URL` (en `frontend/src/api.js`), la dirección del
+  backend. Vite solo expone al navegador las variables que empiezan por `VITE_`.
+
+En tu PC se definen en un archivo `.env` (ignorado por git); en Render, en la
+pestaña *Environment* del servicio.
 
 ---
 

@@ -1,7 +1,15 @@
 # Contrato de la API
 
-El backend expone **un único endpoint**. Documentación interactiva generada
-automáticamente por FastAPI: `http://localhost:8000/docs`.
+El backend expone **dos endpoints**: `POST /api/analizar` (el análisis) y
+`GET /api/salud` (comprobación de que está vivo). Documentación interactiva
+generada automáticamente por FastAPI: `http://localhost:8000/docs`.
+
+---
+
+## `GET /api/salud`
+
+Comprobación de salud (*health check*). La usa Render para saber si el servidor
+responde. No recibe nada y siempre devuelve `200 OK` con `{"ok": true}`.
 
 ---
 
@@ -101,5 +109,7 @@ Todas las respuestas de error tienen la forma `{"detail": "mensaje"}`.
 
 ### CORS
 
-Solo se aceptan peticiones de navegador desde `http://localhost:5173` y
-`http://127.0.0.1:5173`, y solo con método `POST`.
+Los orígenes permitidos se leen de la variable de entorno `ALLOWED_ORIGINS`
+(separados por comas). Si no está definida, solo se aceptan
+`http://localhost:5173` y `http://127.0.0.1:5173`. Solo se acepta el método `POST`
+desde el navegador.

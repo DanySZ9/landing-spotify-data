@@ -89,12 +89,12 @@ Ojo con el orden: las comprobaciones más específicas deben ir primero.
 
 ## Receta 6 — Agregar otro endpoint
 
-Para algo pequeño (p. ej. comprobar que el servidor está vivo), en `main.py`:
+Toma como modelo `/api/salud` en `main.py`:
 
 ```python
-@app.get("/api/salud")
-def salud():
-    return {"ok": True}
+@app.get("/api/version")
+def version():
+    return {"version": "1.0"}
 ```
 
 Recuerda añadir `"GET"` a `allow_methods` del middleware CORS si lo va a llamar
@@ -103,27 +103,67 @@ el navegador. Si el número de endpoints crece, conviene moverlos a routers
 
 ---
 
-## Despliegue en un servidor
+## Despliegue en Render
 
-> Lista de comprobación; las mejoras recomendadas están en `HALLAZGOS.md`.
+El backend no tiene direcciones fijas en el código: todo lo que cambia entre tu
+PC y el servidor se configura con **variables de entorno**.
 
-1. **Python 3.10+** en el servidor y un entorno virtual con
-   `pip install -r requirements.txt`.
-2. **CORS**: añade el dominio real del frontend a `allow_origins` en `main.py`
-   (p. ej. `https://estadisticas.midominio.com`). Idealmente, léelo de una
-   variable de entorno en lugar de escribirlo en el código.
-3. **Frontend**: compílalo con `VITE_API_URL` apuntando al backend público
-   (p. ej. `VITE_API_URL=https://api.midominio.com npm run build`).
-4. **Arrancar sin `--reload`** y escuchando en todas las interfaces:
-   ```bash
-   uvicorn main:app --host 0.0.0.0 --port 8000 --workers 2
-   ```
-   Cada *worker* es un proceso independiente; como el análisis consume CPU y
-   RAM, ajusta el número según la memoria del servidor.
-5. **Proxy inverso con HTTPS** (Nginx, Caddy o el de tu plataforma) delante de
-   Uvicorn. Ahí también puedes limitar el tamaño de subida (en Nginx:
-   `client_max_body_size 200m;`).
-6. **Mantenerlo vivo**: un servicio de systemd, Docker, o la plataforma de
-   hosting (Render, Railway, Fly.io…) para reiniciarlo si se cae.
-7. **Comprobación**: abrir `https://tu-backend/docs` y hacer un análisis de prueba
-   desde el frontend desplegado.
+### 1. Crear el servicio
+En Render: **New → Web Service**, conecta el repositorio y completa:
+
+| Campo | Valor |
+|---|---|
+| Language / Runtime | Python 3 |
+| Root Directory | `backend` |
+| Build Command | `pip install -r requirements.txt` |
+| Start Command | `uvicorn main:app --host 0.0.0.0 --port $PORT` |
+| Health Check Path (en *Advanced*) | `/api/salud` |
+
+Por qué ese Start Command:
+- `main:app` → archivo `main.py`, variable `app`.
+- `--host 0.0.0.0` → acepta conexiones de fuera del servidor. Con el valor por
+  defecto (`127.0.0.1`) solo aceptaría conexiones internas y Render no podría alcanzarlo.
+- `--port $PORT` → Render elige el puerto y lo pasa en la variable `PORT`.
+  **No** pongas un número fijo.
+- Sin `--reload`: eso es solo para desarrollo.
+
+### 2. Variables de entorno del backend (pestaña *Environment*)
+
+| Variable | Ejemplo | Para qué |
+|---|---|---|
+| `ALLOWED_ORIGINS` | `https://tu-frontend.onrender.com` | Dominios del frontend autorizados por CORS. Varios separados por comas. Sin barra final. |
+| `PYTHON_VERSION` | `3.13.1` | Versión de Python que Render instala. Usa una versión completa que Render ofrezca y que hayas probado. |
+
+Si `ALLOWED_ORIGINS` no está definida, solo se aceptan los orígenes de
+desarrollo (`localhost:5173`) y **el frontend publicado quedará bloqueado**.
+
+### 3. Frontend
+`VITE_API_URL` se lee **al compilar** el frontend, y el archivo `.env` no se
+sube al repositorio. Defínela en el panel del servicio del frontend:
+
+```
+VITE_API_URL=https://tu-backend.onrender.com
+```
+
+Sin barra final. Si la cambias, vuelve a desplegar el frontend.
+
+### 4. Comprobar
+1. `https://tu-backend.onrender.com/api/salud` debe responder `{"ok":true}`.
+2. `https://tu-backend.onrender.com/docs` abre la documentación interactiva.
+3. Haz un análisis desde el frontend publicado. Si el navegador muestra un error
+   de CORS, revisa que `ALLOWED_ORIGINS` coincida **exactamente** con la
+   dirección del frontend (`https://`, sin barra final).
+
+### 5. A tener en cuenta en el plan gratuito
+- El servicio "se duerme" tras un rato sin uso; la primera petición después
+  puede tardar cerca de un minuto en responder.
+- La memoria es limitada. Historiales de muchos años consumen bastante RAM al
+  analizarse; si el servicio se reinicia en pleno análisis, es la causa más probable.
+
+### Probar el comando de Render en tu PC
+```bash
+# PowerShell
+$env:PORT = "8000"; uvicorn main:app --host 0.0.0.0 --port $env:PORT
+# macOS / Linux / Git Bash
+PORT=8000 uvicorn main:app --host 0.0.0.0 --port $PORT
+```

@@ -1,8 +1,7 @@
 # Hallazgos de la revisión
 
 Observaciones detectadas al documentar el backend (noviembre de 2026).
-**Ninguna se ha corregido todavía**: esta revisión solo añadió documentación,
-sin cambiar el comportamiento del código. Están ordenadas por prioridad.
+Están ordenadas por prioridad. Las resueltas se marcan con ✅ y la fecha.
 
 ---
 
@@ -40,20 +39,15 @@ saber por qué. Se podría validar en `Filtros` o informar en la respuesta.
 
 ## Despliegue y configuración
 
-### 6. Orígenes CORS escritos en el código — prioridad alta para desplegar
-Solo se aceptan `localhost:5173`/`127.0.0.1:5173`. Al desplegar habrá que editar
-`main.py`. **Propuesta:** leer una variable de entorno, p. ej.
-`ALLOWED_ORIGINS=https://midominio.com`, con los valores actuales como respaldo.
+### 6. ~~Orígenes CORS escritos en el código~~ — ✅ RESUELTO (16/11/2026)
+`main.py` lee ahora la variable de entorno `ALLOWED_ORIGINS` y, si no existe,
+usa los orígenes de desarrollo.
 
-### 7. Dependencias sin versión fija — prioridad media
-`requirements.txt` no fija versiones: una instalación futura puede traer una
-versión de pandas o Plotly con cambios incompatibles y romper el backend sin
-haber tocado el código. **Propuesta:** fijar versiones probadas
-(`pip freeze > requirements.txt` o rangos como `pandas>=3.1,<4`).
+### 7. ~~Dependencias sin versión fija~~ — ✅ RESUELTO (16/11/2026)
+`requirements.txt` fija las versiones exactas con las que se probó el backend.
 
-### 8. No hay endpoint de salud — prioridad baja
-Las plataformas de hosting suelen comprobar una ruta (p. ej. `GET /api/salud`)
-para saber si el servicio está vivo. Ver receta 6 en `GUIA_CAMBIOS.md`.
+### 8. ~~No hay endpoint de salud~~ — ✅ RESUELTO (16/11/2026)
+Se agregó `GET /api/salud`, que devuelve `{"ok": true}`.
 
 ### 9. Logging sin configurar — prioridad baja
 `main.py` crea un logger pero no configura formato ni nivel. Los errores sí se
@@ -69,14 +63,15 @@ No hay tests. Los cálculos (sesiones, rankings, filtros) son fáciles de probar
 porque no dependen de HTTP. **Propuesta:** `pytest` con un historial pequeño de
 ejemplo y `fastapi.testclient.TestClient` para el endpoint.
 
-### 11. Proyecto sin control de versiones ni `.gitignore` — prioridad media
-La carpeta raíz no es un repositorio git. Al crearlo, conviene ignorar
-`__pycache__/`, `.venv/` y `node_modules/`.
+### 11. Proyecto sin control de versiones — prioridad media (`.gitignore` ✅ resuelto)
+Ya existe un `.gitignore` en la raíz que excluye cachés, entornos virtuales,
+`node_modules/`, archivos `.env` e historiales de Spotify. Falta inicializar el
+repositorio git.
 
-### 12. Archivos sobrantes — prioridad baja
-- `backend/package-lock.json`: archivo vacío de npm, sin uso en un backend Python.
-- `backend/__pycache__/datos.cpython-315.pyc`: caché de un `datos.py` que ya no existe.
-Ambos se pueden borrar sin efecto.
+### 12. Archivos sobrantes — prioridad baja (parcialmente resuelto)
+- ~~`backend/package-lock.json`~~: eliminado.
+- `backend/__pycache__/datos.cpython-315.pyc`: caché de un `datos.py` que ya no
+  existe. Inofensivo, y `__pycache__/` ya está en el `.gitignore`.
 
 ### 13. Columna `dia` con dos significados — prioridad baja
 En `data.preparar`, `dia` es el día de la semana (0–6); en `tablas.top_dias` se

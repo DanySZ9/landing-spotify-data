@@ -91,6 +91,5 @@ main.py ──► data.py ──────► etiquetas.py
 - Todo el historial se carga en memoria en cada petición: historiales muy
   grandes (varios cientos de MB) consumen mucha RAM y CPU.
 - No hay límite de tamaño ni de número de archivos.
-- La configuración (CORS) está escrita en el código.
 
 Detalles y propuestas en [`HALLAZGOS.md`](HALLAZGOS.md).

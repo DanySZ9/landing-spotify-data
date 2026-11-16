@@ -46,7 +46,10 @@ pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
 ```
 
-- La API queda en `http://localhost:8000/api/analizar`.
+- La API queda en `http://localhost:8000/api/analizar`
+  (y `http://localhost:8000/api/salud` para comprobar que el servidor responde).
+- Para publicarlo en Render, sigue la sección **Despliegue en Render** de
+  [`docs/GUIA_CAMBIOS.md`](docs/GUIA_CAMBIOS.md).
 - FastAPI genera documentación interactiva automática en
   **`http://localhost:8000/docs`**: desde ahí se puede probar el endpoint subiendo archivos.
 - El frontend (`npm run dev` en `../frontend`) se sirve en `http://localhost:5173`
@@ -64,8 +67,7 @@ backend/
 ├── graficos.py       ← Construye los gráficos (Plotly) como JSON
 ├── tablas.py         ← Construye los rankings (top artistas, canciones…)
 ├── etiquetas.py      ← Traduce códigos de Spotify a textos en español
-├── requirements.txt  ← Lista de librerías de Python necesarias
-├── package-lock.json ← Archivo sobrante de npm (no se usa, ver HALLAZGOS)
+├── requirements.txt  ← Lista de librerías de Python necesarias (versiones fijas)
 └── docs/             ← Documentación detallada
 ```
 
@@ -86,7 +88,7 @@ main.py ──► data.py (cargar → preparar → opciones → filtrar) ──�
 | [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md) | Cómo está organizado el backend y qué ocurre, paso a paso, en cada petición. |
 | [`docs/ARCHIVOS.md`](docs/ARCHIVOS.md) | Ficha de cada archivo: propósito, responsabilidad, dependencias, entradas, salidas y cuándo modificarlo. |
 | [`docs/API.md`](docs/API.md) | Contrato del endpoint: qué enviar, qué se recibe y qué errores pueden ocurrir. |
-| [`docs/GUIA_CAMBIOS.md`](docs/GUIA_CAMBIOS.md) | Recetas: agregar un filtro, un gráfico o una tabla; desplegar en un servidor. |
+| [`docs/GUIA_CAMBIOS.md`](docs/GUIA_CAMBIOS.md) | Recetas: agregar un filtro, un gráfico o una tabla; desplegar en Render. |
 | [`docs/HALLAZGOS.md`](docs/HALLAZGOS.md) | Observaciones de seguridad, despliegue y mantenimiento detectadas en la revisión (pendientes de decidir). |
 
 Además, **cada archivo `.py` empieza con un comentario** que resume su
