@@ -103,12 +103,26 @@ el navegador. Si el número de endpoints crece, conviene moverlos a routers
 
 ---
 
-## Despliegue en Render
+## Despliegue: backend en Render + frontend en Vercel
 
-El backend no tiene direcciones fijas en el código: todo lo que cambia entre tu
-PC y el servidor se configura con **variables de entorno**.
+Direcciones actuales del proyecto:
 
-### 1. Crear el servicio
+| Parte | Plataforma | URL |
+|---|---|---|
+| Backend | Render | `https://spotlytics.onrender.com` |
+| Frontend | Vercel | `https://spotlytics-five.vercel.app` |
+
+Ninguna parte tiene direcciones fijas en el código: todo lo que cambia entre tu
+PC y los servidores se configura con **variables de entorno**, y cada parte
+necesita conocer la dirección de la otra:
+
+```
+ Frontend (Vercel)  ── VITE_API_URL ──────►  Backend (Render)
+   "¿a quién llamo?"                           "¿a quién le respondo?"
+ Frontend (Vercel)  ◄── ALLOWED_ORIGINS ────  Backend (Render)
+```
+
+### 1. Backend: crear el servicio en Render
 En Render: **New → Web Service**, conecta el repositorio y completa:
 
 | Campo | Valor |
@@ -127,38 +141,83 @@ Por qué ese Start Command:
   **No** pongas un número fijo.
 - Sin `--reload`: eso es solo para desarrollo.
 
-### 2. Variables de entorno del backend (pestaña *Environment*)
+### 2. Backend: variables de entorno en Render (pestaña *Environment*)
 
-| Variable | Ejemplo | Para qué |
+| Variable | Valor | Para qué |
 |---|---|---|
-| `ALLOWED_ORIGINS` | `https://tu-frontend.onrender.com` | Dominios del frontend autorizados por CORS. Varios separados por comas. Sin barra final. |
-| `PYTHON_VERSION` | `3.13.1` | Versión de Python que Render instala. Usa una versión completa que Render ofrezca y que hayas probado. |
+| `ALLOWED_ORIGINS` | `https://spotlytics-five.vercel.app` | Dominios del frontend autorizados por CORS. Varios separados por comas. Sin barra final. |
+| `PYTHON_VERSION` | p. ej. `3.13.1` | Versión de Python que Render instala. Usa una versión completa que Render ofrezca y que hayas probado. |
 
 Si `ALLOWED_ORIGINS` no está definida, solo se aceptan los orígenes de
 desarrollo (`localhost:5173`) y **el frontend publicado quedará bloqueado**.
+Al guardar una variable Render reinicia el servicio; si no lo hace, usa
+**Manual Deploy → Deploy latest commit**.
 
-### 3. Frontend
-`VITE_API_URL` se lee **al compilar** el frontend, y el archivo `.env` no se
-sube al repositorio. Defínela en el panel del servicio del frontend:
+### 3. Frontend: proyecto en Vercel
+Al importar el repositorio en Vercel (**Add New → Project**):
+
+| Campo | Valor |
+|---|---|
+| Framework Preset | Vite (Vercel lo detecta solo) |
+| Root Directory | `frontend` |
+| Build Command | `npm run build` (por defecto) |
+| Output Directory | `dist` (por defecto) |
+
+### 4. Frontend: variable de entorno en Vercel
+En **Settings → Environment Variables**:
 
 ```
-VITE_API_URL=https://tu-backend.onrender.com
+VITE_API_URL=https://spotlytics.onrender.com
 ```
 
-Sin barra final. Si la cambias, vuelve a desplegar el frontend.
+- **Sin barra final**: el código arma la dirección como `${API}/api/analizar`;
+  con barra quedaría `...onrender.com//api/analizar`.
+- Márcala al menos para **Production** (y **Preview** si quieres que las
+  previsualizaciones también llamen al backend).
+- El archivo `.env` está en el `.gitignore`, así que Vercel **no** lo ve: la
+  variable debe estar en el panel.
+- Vite escribe la variable dentro del código **al compilar**. Después de crearla
+  o cambiarla hay que volver a compilar: **Deployments → ⋯ → Redeploy**.
+- Solo las variables que empiezan por `VITE_` llegan al navegador. Por lo mismo,
+  **nunca** pongas secretos en una variable `VITE_`: cualquiera puede verla en el
+  código de la página.
 
-### 4. Comprobar
-1. `https://tu-backend.onrender.com/api/salud` debe responder `{"ok":true}`.
-2. `https://tu-backend.onrender.com/docs` abre la documentación interactiva.
-3. Haz un análisis desde el frontend publicado. Si el navegador muestra un error
-   de CORS, revisa que `ALLOWED_ORIGINS` coincida **exactamente** con la
-   dirección del frontend (`https://`, sin barra final).
+### 5. Comprobar
+1. Abre `https://spotlytics.onrender.com/api/salud`: debe responder `{"ok":true}`.
+2. `https://spotlytics.onrender.com/docs` abre la documentación interactiva.
+3. Abre `https://spotlytics-five.vercel.app`, pulsa **F12 → Network (Red)** y
+   sube un historial. Según lo que veas en la petición `analizar`:
 
-### 5. A tener en cuenta en el plan gratuito
+| Síntoma | Causa | Solución |
+|---|---|---|
+| Apunta a `spotlytics.onrender.com` y responde 200 | Todo correcto | — |
+| Apunta a `localhost:8000` | `VITE_API_URL` no se aplicó | Revisa el nombre exacto de la variable en Vercel y haz *Redeploy*. |
+| Error de **CORS** en la consola | `ALLOWED_ORIGINS` no coincide con el dominio de Vercel | Debe ser exactamente `https://spotlytics-five.vercel.app`. |
+| Tarda casi un minuto y luego funciona | El servicio de Render estaba "dormido" | Normal en el plan gratuito (ver abajo). |
+| Error 502/503 o el servicio se reinicia a mitad del análisis | Falta de memoria con historiales muy grandes | Prueba con menos archivos o un plan con más RAM. |
+
+### 6. Previsualizaciones (*preview deployments*) de Vercel
+Vercel publica cada rama o *pull request* en una dirección distinta, por
+ejemplo `spotlytics-git-mi-rama-usuario.vercel.app`. Esas direcciones **no**
+están en `ALLOWED_ORIGINS`, así que el backend las rechaza. Es lo correcto para
+producción. Si quieres probar una previsualización contra el backend, agrega
+su dirección separada por comas:
+
+```
+ALLOWED_ORIGINS=https://spotlytics-five.vercel.app,https://spotlytics-git-mi-rama-usuario.vercel.app
+```
+
+### 7. A tener en cuenta en el plan gratuito de Render
 - El servicio "se duerme" tras un rato sin uso; la primera petición después
   puede tardar cerca de un minuto en responder.
 - La memoria es limitada. Historiales de muchos años consumen bastante RAM al
   analizarse; si el servicio se reinicia en pleno análisis, es la causa más probable.
+
+### 8. Si cambia alguna dirección
+| Si cambia… | Actualiza… | Y después… |
+|---|---|---|
+| El dominio del frontend (p. ej. dominio propio) | `ALLOWED_ORIGINS` en Render | Render se reinicia solo. |
+| La URL del backend | `VITE_API_URL` en Vercel | *Redeploy* en Vercel. |
 
 ### Probar el comando de Render en tu PC
 ```bash

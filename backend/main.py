@@ -74,7 +74,7 @@ app = FastAPI()
 # (valores separados por comas, sin barra final). Así el mismo código sirve en
 # desarrollo y en producción cambiando solo la configuración del servidor:
 #   - En tu PC no hace falta definirla: se usan los orígenes de Vite (puerto 5173).
-#   - En Render: ALLOWED_ORIGINS=https://tu-frontend.onrender.com
+#   - En Render: ALLOWED_ORIGINS=https://spotlytics-five.vercel.app  (frontend en Vercel)
 ORIGENES_DESARROLLO = "http://localhost:5173,http://127.0.0.1:5173"
 ORIGENES = [
     o.strip().rstrip("/")   # tolera espacios y una barra final escrita por error
