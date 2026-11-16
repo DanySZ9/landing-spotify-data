@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node / Vite
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Logs
+*.log
+
+# Configuración y secretos (nunca al repositorio)
+.env
+.env.*
+!.env.example
+
+# Datos personales de Spotify (por si se usan para pruebas)
+Streaming_History_*.json
+my_spotify_data*/
+*.zip
+
+# Editor / sistema
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
