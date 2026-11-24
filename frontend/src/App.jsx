@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { analizar } from "./api.js";
+import { cargarPlot } from "./cargarPlot.js";
 import { FILTROS_INICIALES } from "./filtros.js";
 
 {/* COMPONENTES */}
@@ -26,6 +27,8 @@ import TablaTopDias from "./components/tables/TablaTopDias.jsx";
 import TablaHistorial from "./components/tables/TablaHistorial.jsx";
 
 {/* COMPONENTES */}
+import Fondo from "./components/Fondo.jsx";
+import FotoPaso from "./components/FotoPaso.jsx";
 import Header from "./components/Header.jsx"
 import PreguntasFrecuentes from "./components/PreguntasFrecuentes.jsx";
 
@@ -64,6 +67,7 @@ export default function App() {
   function alElegirArchivos(e) {
     const files = [...e.target.files];
     if (!files.length) return;
+    cargarPlot().catch(() => {}); // se adelanta mientras responde el servidor
     setArchivos(files);
     setDatos(null);
     ejecutar(files, FILTROS_INICIALES);
@@ -71,9 +75,6 @@ export default function App() {
 
   const g = datos?.graficos;
   const t = datos?.tablas;
-
-  const tens = [1, 2, 1];                                  
-  const units = [3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 3]; 
 
   // Preguntas frecuentes. `categoria` alimenta los botones para filtrar por tema
   // en <PreguntasFrecuentes />. Las respuestas describen el comportamiento real
@@ -205,18 +206,7 @@ export default function App() {
   return (
     <main>
 
-      <div className="background">
-        <div className="window tens">
-          <div className="strip">
-            {tens.map((n, i) => <div className="number" key={i}>{n}</div>)}
-          </div>
-        </div>
-        <div className="window units">
-          <div className="strip">
-            {units.map((n, i) => <div className="number" key={i}>{n}</div>)}
-          </div>
-        </div>
-      </div>
+      <Fondo />
 
       <Header />
       
@@ -251,7 +241,11 @@ export default function App() {
 
             <div className="pestanas" role="tablist">
               {PESTANAS.map(([id, nombre]) => (
-                <button key={id} role="tab" aria-selected={pestana === id} onClick={() => setPestana(id)}>
+                <button key={id} role="tab" aria-selected={pestana === id} onClick={(e) => {
+                  setPestana(id);
+                  // En móvil las pestañas se desplazan: centra la elegida
+                  e.currentTarget.scrollIntoView({ block: "nearest", inline: "center" });
+                }}>
                   {nombre}
                 </button>
               ))}
@@ -300,7 +294,7 @@ export default function App() {
 
         <div className="step step-top">
           <figure className="step-figure">
-            <img src="../nainoa-shizuru-NcdG9mK3PBY-unsplash.jpg" alt="Paso 1: página de privacidad" className="img-step" />
+            <FotoPaso archivo="nainoa-shizuru" alt="Paso 1: página de privacidad" />
             <figcaption className="image-credit">
               Foto de <a href="https://unsplash.com/es/@nainoa?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Nainoa Shizuru</a> en <a href="https://unsplash.com/es/fotos/concert-photos-NcdG9mK3PBY?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
             </figcaption>
@@ -328,7 +322,7 @@ export default function App() {
             </p>
           </div>
           <figure className="step-figure">
-            <img src="../blocks-T3mKJXfdims-unsplash.jpg" alt="Paso 2: Solicita" className="img-step" />
+            <FotoPaso archivo="blocks" alt="Paso 2: Solicita" />
             <figcaption className="image-credit">
               Foto de <a href="https://unsplash.com/es/@blocks?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">blocks</a> en <a href="https://unsplash.com/es/fotos/auriculares-y-discos-de-vinilo-vintage-T3mKJXfdims?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
             </figcaption>
@@ -337,7 +331,7 @@ export default function App() {
 
         <div className="step">
           <figure className="step-figure">
-            <img src="../gabriel-gurrola-2UuhMZEChdc-unsplash.jpg" alt="Paso 3: Confirma desde tu correo" className="img-step" />
+            <FotoPaso archivo="gabriel-gurrola" alt="Paso 3: Confirma desde tu correo" />
             <figcaption className="image-credit">
               Foto de <a href="https://unsplash.com/es/@gabrielgurrola?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Gabriel Gurrola</a> en <a href="https://unsplash.com/es/fotos/persona-tocando-la-guitarra-2UuhMZEChdc?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
             </figcaption>
@@ -361,7 +355,7 @@ export default function App() {
             </p>
           </div>
           <figure className="step-figure">
-            <img src="../austin-neill-hgO1wFPXl3I-unsplash.jpg" alt="Paso 4: Espera y descarga tu archivo" className="img-step" />
+            <FotoPaso archivo="austin-neill" alt="Paso 4: Espera y descarga tu archivo" />
             <figcaption className="image-credit">
               Foto de <a href="https://unsplash.com/es/@arstyy?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Austin Neill</a> en <a href="https://unsplash.com/es/fotos/hombre-con-camisa-gris-de-manga-corta-cantando-hgO1wFPXl3I?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
             </figcaption>
@@ -370,7 +364,7 @@ export default function App() {
 
         <div className="step step-bottom">
           <figure className="step-figure">
-            <img src="../kevin-mccutcheon-TcSckNRL9J8-unsplash.jpg" alt="Paso 5: Descomprime y sube tus archivos" className="img-step" />
+            <FotoPaso archivo="kevin-mccutcheon" alt="Paso 5: Descomprime y sube tus archivos" ancho={1280} alto={1920} />
             <figcaption className="image-credit">
               Foto de <a href="https://unsplash.com/es/@kevinmccutcheon?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Kevin McCutcheon</a> en <a href="https://unsplash.com/es/fotos/tocadiscos-negro-sobre-mesa-de-madera-marron-TcSckNRL9J8?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
             </figcaption>

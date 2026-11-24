@@ -61,6 +61,7 @@ export default function Header({ hayDatos = false }) {
               </a>
             </li>
           ))}
+          <li className="solo-estrecho"><a href="#main" onClick={cerrar}>Subir historial</a></li>
         </ul>
       </nav>
 

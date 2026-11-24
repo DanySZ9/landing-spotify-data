@@ -4,7 +4,7 @@
   width: 100%;
   background: var(--fondo-2);
   color: #121212;
-  padding: clamp(64px, 10vw, 140px) clamp(20px, 6vw, 150px);
+  padding: clamp(64px, 10vw, 140px) var(--margen);
 }
 .faq-contenedor {
   max-width: 1200px;
@@ -47,6 +47,7 @@
 .faq-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
 .faq-chips button {
   padding: 8px 16px;
+  min-height: 44px;
   border: 1px solid #121212;
   border-radius: 999px;
   background: transparent;
@@ -126,7 +127,7 @@
 }
 
 @media (max-width: 900px) {
-  .faq-contenedor { grid-template-columns: 1fr; }
+  .faq-contenedor { grid-template-columns: minmax(0, 1fr); }
   .faq-intro { position: static; }
-  .faq-respuesta { padding-right: 0; }
+  .faq-respuesta { padding-right: 0; overflow-wrap: anywhere; }
 }

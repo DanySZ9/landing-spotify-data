@@ -16,7 +16,7 @@ export default function TablaTopArtistas({ filas }) {
   return (
     <Tabla
       titulo="Tus artistas más escuchados"
-      descripcion="Ordenados por tiempo escuchado. Haz clic en un encabezado para ordenar por otra columna."
+      descripcion="Ordenados por tiempo escuchado. También puedes ordenarlos por otra columna."
       columnas={COLUMNAS}
       filas={filas}
     />

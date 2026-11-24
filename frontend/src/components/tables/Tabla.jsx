@@ -103,15 +103,41 @@ export default function Tabla({
         )}
       </div>
 
+      <div className="orden-movil">
+        <label>
+          Ordenar por
+          <select
+            value={orden?.clave ?? ""}
+            onChange={(e) => {
+              const c = columnas.find((col) => col.clave === e.target.value);
+              setOrden(c ? { clave: c.clave, dir: c.tipo === "texto" ? 1 : -1 } : null);
+            }}
+          >
+            <option value="">Orden original</option>
+            {columnas.map((c) => <option key={c.clave} value={c.clave}>{c.etiqueta}</option>)}
+          </select>
+        </label>
+        <button
+          type="button"
+          disabled={!orden}
+          aria-label={orden?.dir === 1 ? "Cambiar a orden descendente" : "Cambiar a orden ascendente"}
+          onClick={() => setOrden((o) => o && { ...o, dir: -o.dir })}
+        >
+          <span aria-hidden="true">{orden?.dir === 1 ? "▲" : "▼"}</span>
+        </button>
+      </div>
+
+      {/* Los role explícitos conservan la semántica de tabla cuando el CSS la muestra como tarjetas */}
       <div className="tabla-scroll">
-        <table>
-          <thead>
-            <tr>
-              {ranking && <th className="col-rank"><span className="sr-only">Posición</span></th>}
+        <table role="table">
+          <thead role="rowgroup">
+            <tr role="row">
+              {ranking && <th role="columnheader" className="col-rank"><span className="sr-only">Posición</span></th>}
               {columnas.map((c) => {
                 const activo = orden?.clave === c.clave;
                 return (
                   <th
+                    role="columnheader"
                     key={c.clave}
                     className={c.tipo === "texto" ? "" : "num"}
                     aria-sort={activo ? (orden.dir === 1 ? "ascending" : "descending") : "none"}
@@ -125,12 +151,19 @@ export default function Tabla({
               })}
             </tr>
           </thead>
-          <tbody>
+          <tbody role="rowgroup">
             {mostradas.map((fila, i) => (
-              <tr key={i}>
-                {ranking && <td className="col-rank">{i + 1}</td>}
-                {columnas.map((c) => (
-                  <td key={c.clave} className={c.tipo === "texto" ? "" : "num"}>{celda(c, fila)}</td>
+              <tr role="row" key={i}>
+                {ranking && <td role="cell" className="col-rank">{i + 1}</td>}
+                {columnas.map((c, n) => (
+                  <td
+                    role="cell"
+                    key={c.clave}
+                    data-etiqueta={c.etiqueta}
+                    className={`${c.tipo === "texto" ? "" : "num"} ${n === 0 ? "principal" : ""}`}
+                  >
+                    {celda(c, fila)}
+                  </td>
                 ))}
               </tr>
             ))}
