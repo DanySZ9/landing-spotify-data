@@ -190,6 +190,6 @@ pestaña *Environment* del servicio.
 | `master_metadata_track_name` / `..._album_artist_name` / `..._album_album_name` | Canción, artista y álbum. Vacíos si es un podcast. |
 | `spotify_track_uri` | Identificador único de la canción (`spotify:track:...`). |
 | `episode_name` / `episode_show_name` | Episodio y programa, si es un podcast. |
-| `reason_start` / `reason_end` | Código de cómo empezó/terminó (`clickrow`, `trackdone`, `fwbtn`…). Traducidos en `etiquetas.py`. |
+| `reason_start` / `reason_end` | Código de cómo empezó/terminó (`clickrow`, `trackdone`, `fwdbtn`…). Traducidos en `etiquetas.py`. |
 | `shuffle`, `skipped`, `offline`, `incognito_mode` | Verdadero/falso: aleatorio, saltada, sin conexión, modo incógnito. |
 | UTC / zona IANA | UTC es la hora universal. Una zona IANA es un nombre estándar como `America/Bogota`, usado para convertir a la hora local del usuario. |

@@ -2,7 +2,7 @@
 etiquetas.py — Traducciones y agrupaciones para que los códigos del export se entiendan.
 
 PROPÓSITO
-    El export de Spotify usa códigos técnicos en inglés ("fwbtn", "trackdone",
+    El export de Spotify usa códigos técnicos en inglés ("fwdbtn", "trackdone",
     "Android OS 11 API 30 (samsung, SM-G991B)"...). Este módulo los traduce a
     textos en español comprensibles para cualquier persona.
 
@@ -37,7 +37,7 @@ import pandas as pd
 # Se usa en la tabla de historial reciente (columna "Fin").
 FIN_DETALLE = {
     "trackdone": "Terminó sola",
-    "fwbtn": "La saltaste",
+    "fwdbtn": "La saltaste",
     "backbtn": "Volviste a la anterior",
     "endplay": "La detuviste",
     "logout": "Cerraste sesión",
@@ -53,7 +53,7 @@ FIN_DETALLE = {
 # Se usa en el gráfico "Cómo terminan tus reproducciones".
 GRUPO_FIN = {
     "trackdone": "Terminó sola",
-    "fwbtn": "La saltaste",
+    "fwdbtn": "La saltaste",
     "backbtn": "Volviste a la anterior",
     "endplay": "La detuviste o cerraste la app",
     "logout": "La detuviste o cerraste la app",
@@ -67,7 +67,7 @@ GRUPO_FIN = {
 GRUPO_INICIO = {
     "clickrow": "La elegiste tú",
     "trackdone": "Sonó sola tras la anterior",
-    "fwbtn": "Botón siguiente",
+    "fwdbtn": "Botón siguiente",
     "backbtn": "Botón anterior",
     "playbtn": "Al abrir la app o dar play",
     "appload": "Al abrir la app o dar play",
