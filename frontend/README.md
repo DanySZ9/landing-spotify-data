@@ -1,44 +1,49 @@
-# Your Spotify, in numbers
+# Spotlytics: frontend
 
-Upload your Spotify **Extended Streaming History** and explore how you really
-listen to music: your top artists, albums and songs, when you listen, on which
-devices, and how often you skip.
+The web app for [Spotlytics](../README.md). It handles file uploads, charts,
+tables and filters, and builds the share cards, all in the browser.
 
-Everything is processed on the fly: your files are analyzed and discarded, with
-no accounts, passwords or database.
+## Stack
 
-> Independent project, not affiliated with Spotify.
+- React + Vite
+- Plain CSS
+- Plotly (react-plotly.js) for charts
+- html-to-image for the share cards
 
-## What you can discover
+## Getting started
 
-**Charts**
-- Hours listened per month
-- What time of day you listen most
-- Heatmap of days and hours
-- Devices you listen on
-- How you play: shuffle, skipped, offline, private session
-- How long each play lasts
-- How your plays start and end
+Requires Node.js 20 or newer.
 
-**Rankings and tables**
-- Top artists, songs, albums and podcasts
-- Songs you skip the most
-- Your biggest listening days
-- Your latest plays
+```bash
+npm install
+npm run dev      # http://localhost:5173
+```
 
-**Filters**
-Date range, artist, content type (music or podcasts), device, minimum play
-duration, and skipped / shuffle / offline / incognito.
+The app expects the backend at `http://localhost:8000` (see [`../backend`](../backend)).
+To point it at another server, set `VITE_API_URL` in a `.env.local` file.
 
-**Planned:** shareable cards of your tops and stats, ready to post on social media.
+## Scripts
 
-## How it works
+| Command | What it does |
+|---|---|
+| `npm run dev` | Development server with hot reload |
+| `npm run build` | Production build in `dist/` |
+| `npm run preview` | Serves the production build locally |
+| `npm run lint` | Runs ESLint |
 
-1. Request your data at spotify.com/account/privacy (Extended streaming history).
-2. Upload the `Streaming_History_Audio_*.json` files.
-3. Explore your charts and rankings, and refine them with filters.
+## Structure
 
-## Tech stack
+```
+src/
+├── App.jsx          Page layout, tabs and upload flow
+├── api.js           Calls to the backend
+├── components/
+│   ├── charts/      One component per chart
+│   ├── tables/      Rankings and history
+│   └── compartir/   Share cards and their dialog
+└── ...              Formatting helpers, filters, FAQ content
+```
 
-- **Frontend:** React, Vite, plain CSS, Plotly (react-plotly.js)
-- **Backend:** FastAPI, pandas, Plotly
+## Deployment
+
+Deployed on Vercel.

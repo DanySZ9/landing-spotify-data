@@ -1,97 +1,56 @@
-# Backend — Estadísticas de Spotify
+# Spotlytics: backend
 
-Este backend recibe los archivos de historial que exporta Spotify
-(`Streaming_History_Audio_*.json`), los analiza **en memoria** y devuelve
-estadísticas, gráficos y rankings para que el frontend (React) los muestre.
+API de [Spotlytics](../README.md). Recibe los archivos de historial que exporta
+Spotify (`Streaming_History_Audio_*.json`), los analiza en memoria y devuelve el
+resumen, los gráficos y los rankings que muestra el frontend.
 
-> **No guarda nada.** No hay base de datos ni se escriben archivos en disco.
-> Cada petición se procesa de principio a fin y los datos se descartan al responder.
+No hay base de datos: cada petición se procesa y sus datos se descartan al responder.
 
----
+## Tecnologías
 
-## ¿Qué es un "backend"? (para quien empieza)
+- FastAPI + Uvicorn
+- pandas para el análisis
+- Plotly para generar los gráficos (se envían como JSON)
 
-Una aplicación web suele tener dos partes:
+## Puesta en marcha
 
-| Parte | Dónde se ejecuta | Qué hace en este proyecto |
-|---|---|---|
-| **Frontend** | En el navegador del usuario | Muestra la página, permite elegir archivos y filtros, dibuja los gráficos. Carpeta `../frontend`. |
-| **Backend** | En un servidor (o en tu PC durante el desarrollo) | Recibe los archivos, hace los cálculos pesados con Python y responde con los resultados. **Esta carpeta.** |
-
-Se comunican mediante una **API**: el frontend envía una petición HTTP a una
-dirección concreta (`POST http://localhost:8000/api/analizar`) y el backend
-responde con datos en formato **JSON**. Todos estos términos están explicados en
-[`docs/GLOSARIO.md`](docs/GLOSARIO.md).
-
----
-
-## Inicio rápido
-
-Requisitos: **Python 3.10 o superior** (el código usa la sintaxis `str | None`).
+Requiere Python 3.10 o superior.
 
 ```bash
-cd backend
-
-# 1. Crear y activar un entorno virtual (una "caja" aislada para las librerías)
 python -m venv .venv
-# Windows (PowerShell):
-.venv\Scripts\Activate.ps1
-# macOS / Linux:
-source .venv/bin/activate
-
-# 2. Instalar las dependencias
+# Windows: .venv\Scripts\Activate.ps1   ·   macOS / Linux: source .venv/bin/activate
 pip install -r requirements.txt
-
-# 3. Arrancar el servidor en modo desarrollo (se reinicia al guardar cambios)
 uvicorn main:app --reload --port 8000
 ```
 
-- La API queda en `http://localhost:8000/api/analizar`
-  (y `http://localhost:8000/api/salud` para comprobar que el servidor responde).
-- En producción el backend está en **Render** (`https://spotlytics.onrender.com`)
-  y el frontend en **Vercel** (`https://spotlytics-five.vercel.app`). Los pasos
-  están en la sección **Despliegue** de [`docs/GUIA_CAMBIOS.md`](docs/GUIA_CAMBIOS.md).
-- FastAPI genera documentación interactiva automática en
-  **`http://localhost:8000/docs`**: desde ahí se puede probar el endpoint subiendo archivos.
-- El frontend (`npm run dev` en `../frontend`) se sirve en `http://localhost:5173`
-  y ya está autorizado por CORS para llamar al backend.
-
----
+- La API queda en `http://localhost:8000`.
+- La documentación interactiva de FastAPI está en `http://localhost:8000/docs`.
+- El frontend de desarrollo (`http://localhost:5173`) ya tiene permiso para llamar a la API.
+  En producción, los orígenes permitidos se configuran con variables de entorno.
 
 ## Estructura
 
 ```
 backend/
-├── main.py           ← Puerta de entrada: app FastAPI, CORS y el endpoint /api/analizar
-├── data.py           ← Carga los JSON, limpia, agrega columnas y aplica filtros
-├── analysis.py       ← Arma la respuesta: resumen + gráficos + tablas
-├── graficos.py       ← Construye los gráficos (Plotly) como JSON
-├── tablas.py         ← Construye los rankings (top artistas, canciones…)
-├── etiquetas.py      ← Traduce códigos de Spotify a textos en español
-├── requirements.txt  ← Lista de librerías de Python necesarias (versiones fijas)
-└── docs/             ← Documentación detallada
+├── main.py        App FastAPI y endpoints
+├── data.py        Carga, limpieza y filtros del historial
+├── analysis.py    Arma la respuesta completa
+├── graficos.py    Gráficos
+├── tablas.py      Rankings
+├── etiquetas.py   Textos en español para los códigos de Spotify
+└── docs/          Documentación detallada
 ```
-
-El flujo de una petición, en una línea:
-
-```
-main.py ──► data.py (cargar → preparar → opciones → filtrar) ──► analysis.py ──► graficos.py + tablas.py
-                                         └── etiquetas.py (traducciones) ──┘
-```
-
----
 
 ## Documentación
 
-| Documento | Para qué sirve |
+| Documento | Contenido |
 |---|---|
-| [`docs/GLOSARIO.md`](docs/GLOSARIO.md) | Conceptos explicados desde cero: API, endpoint, JSON, CORS, middleware, DataFrame, Pydantic, JWT, variables de entorno… |
-| [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md) | Cómo está organizado el backend y qué ocurre, paso a paso, en cada petición. |
-| [`docs/ARCHIVOS.md`](docs/ARCHIVOS.md) | Ficha de cada archivo: propósito, responsabilidad, dependencias, entradas, salidas y cuándo modificarlo. |
-| [`docs/API.md`](docs/API.md) | Contrato del endpoint: qué enviar, qué se recibe y qué errores pueden ocurrir. |
-| [`docs/GUIA_CAMBIOS.md`](docs/GUIA_CAMBIOS.md) | Recetas: agregar un filtro, un gráfico o una tabla; desplegar (backend en Render, frontend en Vercel). |
-| [`docs/HALLAZGOS.md`](docs/HALLAZGOS.md) | Observaciones de seguridad, despliegue y mantenimiento detectadas en la revisión (pendientes de decidir). |
+| [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md) | Cómo está organizado y qué ocurre en cada petición |
+| [`docs/API.md`](docs/API.md) | Qué se envía y qué se recibe |
+| [`docs/ARCHIVOS.md`](docs/ARCHIVOS.md) | Ficha de cada archivo |
+| [`docs/GUIA_CAMBIOS.md`](docs/GUIA_CAMBIOS.md) | Cómo agregar filtros, gráficos o tablas, y cómo desplegar |
+| [`docs/GLOSARIO.md`](docs/GLOSARIO.md) | Conceptos básicos explicados desde cero |
 
-Además, **cada archivo `.py` empieza con un comentario** que resume su
-propósito y cada función tiene un *docstring* (texto entre `"""` bajo su
-definición) que explica qué recibe y qué devuelve.
+## Despliegue
+
+Desplegado en Render. Los pasos están en [`docs/GUIA_CAMBIOS.md`](docs/GUIA_CAMBIOS.md).
