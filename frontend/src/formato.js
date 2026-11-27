@@ -26,6 +26,12 @@ export function fmtDia(iso) {
   });
 }
 
+// "2024-03-12" -> "12 de marzo de 2024"
+export function fmtFecha(iso) {
+  const [a, m, d] = iso.split("-").map(Number);
+  return new Date(a, m - 1, d).toLocaleDateString("es", { day: "numeric", month: "long", year: "numeric" });
+}
+
 // "2024-03-12 18:10" -> "12 mar 2024 · 18:10"
 export function fmtFechaHora(texto) {
   const [dia, hora] = texto.split(" ");

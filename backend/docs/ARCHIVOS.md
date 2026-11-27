@@ -120,8 +120,8 @@ El código fuente contiene el mismo resumen en su comentario inicial.
 | `dispositivos` | Barras horizontales | % por dispositivo. |
 | `caracteristicas` | Barras horizontales | % aleatorio, saltadas, sin conexión, incógnito. |
 | `duracion` | Barras | Reproducciones en 5 tramos de duración. |
-| `como_empiezan` / `como_terminan` | Dona | Motivos de inicio / fin agrupados. |
-| `_json`, `_barras_pct`, `_dona` | (internas) | Estilo común y plantillas reutilizables. |
+| `como_empiezan` / `como_terminan` | Barras horizontales (%) | Motivos de inicio / fin agrupados. |
+| `_json`, `_barras_pct`, `_proporciones`, `_destacar_maximo` | (internas) | Estilo común y plantillas reutilizables. |
 
 ---
 
@@ -170,7 +170,7 @@ El código fuente contiene el mismo resumen en su comentario inicial.
 | Nombre | Uso |
 |---|---|
 | `FIN_DETALLE` | Texto detallado del motivo de fin (tabla historial). |
-| `GRUPO_FIN` / `GRUPO_INICIO` | Agrupaciones con pocas categorías (gráficos de dona). |
+| `GRUPO_FIN` / `GRUPO_INICIO` | Agrupaciones con pocas categorías (gráficos de cómo empiezan / terminan). |
 | `grupo_fin`, `grupo_inicio`, `fin_detalle` | Aplican los diccionarios a una columna. |
 | `dispositivo(plataforma)` | Clasifica una plataforma. **El orden de las comprobaciones importa.** |
 

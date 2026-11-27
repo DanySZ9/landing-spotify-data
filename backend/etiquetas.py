@@ -27,7 +27,7 @@ CUÁNDO MODIFICARLO
     - Si aparece "Otro motivo" u "Otro" con frecuencia: falta un código en
       algún diccionario o un patrón en ``dispositivo``.
     - Para cambiar los textos que ve el usuario.
-    - Para cambiar cómo se agrupan las categorías de los gráficos de dona.
+    - Para cambiar cómo se agrupan las categorías de los gráficos de cómo empiezan / terminan.
 """
 import re
 
@@ -50,7 +50,7 @@ FIN_DETALLE = {
 }
 
 # Agrupación para el gráfico (pocas categorías, más fácil de leer).
-# Se usa en el gráfico de dona "¿Cómo terminan?".
+# Se usa en el gráfico "Cómo terminan tus reproducciones".
 GRUPO_FIN = {
     "trackdone": "Terminó sola",
     "fwbtn": "La saltaste",
@@ -63,7 +63,7 @@ GRUPO_FIN = {
 }
 
 # Cómo empezó una reproducción (reason_start).
-# Se usa en el gráfico de dona "¿Cómo empiezan?".
+# Se usa en el gráfico "Cómo empiezan tus reproducciones".
 GRUPO_INICIO = {
     "clickrow": "La elegiste tú",
     "trackdone": "Sonó sola tras la anterior",

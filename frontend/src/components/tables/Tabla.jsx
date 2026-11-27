@@ -59,6 +59,11 @@ export default function Tabla({
   const tope = expandida ? limite : inicial;
   const mostradas = visibles.slice(0, tope);
 
+  // Barra de proporción respecto al valor más alto, sobre una pista gris
+  const barra = (v, max) => (
+    <span className="barra" aria-hidden="true"><i style={{ width: `${(v / max) * 100}%` }} /></span>
+  );
+
   function celda(c, fila) {
     const v = fila[c.clave];
     if (c.render) return c.render(fila);
@@ -66,7 +71,7 @@ export default function Tabla({
       return (
         <div className="celda-barra">
           <span>{fmtDuracion(v)}</span>
-          {c.barra && <i style={{ width: `${(v / maximos[c.clave]) * 100}%` }} aria-hidden="true" />}
+          {c.barra && barra(v, maximos[c.clave])}
         </div>
       );
     }
@@ -78,7 +83,7 @@ export default function Tabla({
       return (
         <div className="celda-barra">
           <span>{fmtNumero(v)}</span>
-          {c.barra && <i style={{ width: `${(v / maximos[c.clave]) * 100}%` }} aria-hidden="true" />}
+          {c.barra && barra(v, maximos[c.clave])}
         </div>
       );
     }
@@ -154,7 +159,11 @@ export default function Tabla({
           <tbody role="rowgroup">
             {mostradas.map((fila, i) => (
               <tr role="row" key={i}>
-                {ranking && <td role="cell" className="col-rank">{i + 1}</td>}
+                {ranking && (
+                  <td role="cell" className="col-rank">
+                    <span className={`rank ${i < 3 && !orden && !texto.trim() ? `rank-${i + 1}` : ""}`}>{i + 1}</span>
+                  </td>
+                )}
                 {columnas.map((c, n) => (
                   <td
                     role="cell"
