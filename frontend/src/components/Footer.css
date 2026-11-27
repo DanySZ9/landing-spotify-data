@@ -1,0 +1,30 @@
+.pie {
+  background: var(--fondo);
+  border-top: 1px solid var(--borde);
+  padding: 32px var(--margen) 28px;
+  font-family: var(--google-sans-flex);
+}
+.pie-contenedor {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px;
+}
+.pie-marca { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1.1rem; }
+.pie-marca svg { width: 36px; height: 36px; flex: none; }
+.pie-firma { margin: 0; display: flex; align-items: center; gap: 14px; color: var(--texto-suave); }
+/* Firma personal: el SVG negro se usa como máscara y se pinta con el color del enlace */
+.pie-firma-logo { display: block; color: var(--texto); transition: color 0.15s; border-radius: 4px; }
+.pie-firma-logo span {
+  display: block; width: 125px; aspect-ratio: 140.97 / 50.77; background: currentColor;
+  -webkit-mask: url("/DaNYsZ99_logo.svg") center / contain no-repeat;
+  mask: url("/DaNYsZ99_logo.svg") center / contain no-repeat;
+}
+.pie-firma-logo:hover { color: var(--verde-hover); }
+.pie-firma-logo:focus-visible { outline: 3px solid var(--cian); outline-offset: 4px; }
+.pie-aviso {
+  margin: 24px 0 0; padding-top: 20px; border-top: 1px solid #222;
+  color: var(--texto-suave); font-size: 0.85rem; line-height: 1.6;
+}
+@media (max-width: 600px) {
+  .pie-contenedor { flex-direction: column; align-items: flex-start; }
+  .pie-firma { gap: 10px; white-space: nowrap; }
+  .pie-firma-logo span { width: 100px; }
+}

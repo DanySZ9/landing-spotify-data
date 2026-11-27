@@ -30,6 +30,7 @@ import TablaHistorial from "./components/tables/TablaHistorial.jsx";
 // COMPONENTES
 import Fondo from "./components/Fondo.jsx";
 import FotoPaso from "./components/FotoPaso.jsx";
+import Footer from "./components/Footer.jsx";
 import Header from "./components/Header.jsx";
 import PreguntasFrecuentes from "./components/PreguntasFrecuentes.jsx";
 
@@ -312,6 +313,7 @@ export default function App() {
 
         <PreguntasFrecuentes preguntas={PREGUNTAS} />
       </main>
+      <Footer />
     </>
   );
 }
