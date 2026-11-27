@@ -7,18 +7,18 @@ Están ordenadas por prioridad. Las resueltas se marcan con ✅ y la fecha.
 
 ## Seguridad y estabilidad
 
-### 1. Sin límite de tamaño ni de número de archivos — prioridad alta (si se publica)
-`main.py` lee cada archivo entero en memoria (`await a.read()`) y pandas crea
-después varias copias de la tabla. Alguien podría enviar archivos enormes o
-cientos de archivos y agotar la RAM del servidor (denegación de servicio).
-**Propuesta:** limitar el tamaño en el proxy inverso (`client_max_body_size`) y
-además en el código (máximo de archivos y de bytes por archivo, respondiendo 413).
+### 1. ~~Sin límite de tamaño ni de número de archivos~~ — ✅ RESUELTO (27/11/2026)
+`main.py` limita la subida a `MAX_ARCHIVOS` (30), `MAX_MB_ARCHIVO` (20 MB) y
+`MAX_MB_TOTAL` (100 MB) y responde 413 si se superan. El frontend comprueba los
+mismos límites antes de enviar. Falta confirmar con un historial completo que
+100 MB caben en la memoria del plan de Render.
 
-### 2. Sin control de abuso — prioridad media (si se publica)
-No hay autenticación ni límite de peticiones. Como cada análisis es costoso en
-CPU, un cliente podría saturar el servidor con peticiones repetidas. CORS no lo
-impide (solo afecta a navegadores).
-**Propuesta:** *rate limiting* por IP en el proxy o con una librería como `slowapi`.
+### 2. ~~Sin control de abuso~~ — ✅ RESUELTO (27/11/2026)
+`main.py` limita cada IP a `LIMITE_PETICIONES` (20) análisis por minuto y
+responde 429 con `Retry-After`. Está hecho a mano, en memoria del proceso (sin
+dependencias); sirve mientras haya una sola instancia. La IP se lee de
+`CF-Connecting-IP` o `X-Forwarded-For`: conviene comprobar en Render que llega
+la IP real del visitante.
 
 ### 3. Fecha de filtro inválida devuelve un mensaje técnico en inglés — prioridad baja
 `{"inicio": "ayer"}` responde 400 con `Unknown datetime string format, unable to parse: ayer`

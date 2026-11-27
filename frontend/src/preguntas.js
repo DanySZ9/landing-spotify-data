@@ -33,7 +33,7 @@ export const PREGUNTAS = [
         id: 5,
         categoria: "Privacidad",
         question: "¿Guardan mis archivos o mi historial?",
-        answer: "No. Tus archivos se analizan en memoria y se descartan en cuanto se generan las estadísticas: no hay base de datos ni se guarda nada en el servidor. Si cierras o recargas la página, tendrás que volver a subirlos."
+        answer: "No. Tus archivos solo se usan mientras se calculan las estadísticas y se borran del servidor en cuanto termina el análisis: no hay base de datos ni se conserva ninguna copia. Si cierras o recargas la página, tendrás que volver a subirlos."
     },
     {
         id: 6,

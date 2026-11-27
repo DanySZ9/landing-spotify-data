@@ -110,6 +110,8 @@ def cargar_historial(archivos: list[tuple[str, bytes]]) -> tuple[pd.DataFrame, l
         - DataFrame con exactamente las columnas de ``COLUMNAS``, con ``ts``
           convertido a fecha UTC, ``ms_played`` numérico y banderas en True/False.
         - Lista con los nombres de los archivos ignorados.
+        Las reproducciones repetidas (mismo archivo subido dos veces) se
+        cuentan una sola vez.
 
     Lanza:
         ValueError si ningún archivo resultó válido (main.py lo convierte en 400).
@@ -151,6 +153,13 @@ def cargar_historial(archivos: list[tuple[str, bytes]]) -> tuple[pd.DataFrame, l
     for col in BANDERAS:
         # ``.eq(True)``: True solo si el valor es exactamente True; null -> False.
         df[col] = df[col].eq(True)
+    # Si se sube el mismo archivo dos veces (o dos exportaciones que se solapan),
+    # cada reproducción aparecería repetida y sumaría doble. Una reproducción
+    # queda identificada por su hora exacta, lo que se escuchó y cuánto duró.
+    df = df.drop_duplicates(
+        subset=["ts", "spotify_track_uri", "episode_name", "ms_played", "platform"],
+        ignore_index=True,
+    )
     return df, ignorados
 
 

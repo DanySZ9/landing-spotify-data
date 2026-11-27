@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { analizar } from "./api.js";
+import { analizar, despertarServidor } from "./api.js";
 import { cargarPlot } from "./cargarPlot.js";
 import { FILTROS_INICIALES } from "./filtros.js";
 import { PREGUNTAS } from "./preguntas.js";
@@ -47,8 +47,12 @@ export default function App() {
   const [pestana, setPestana] = useState("cuando");
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
+  const [lento, setLento] = useState(false);
   const resultados = useRef(null);
   const irAResultados = useRef(false);
+
+  // Despierta al servidor (Render gratuito) mientras el visitante lee la página
+  useEffect(despertarServidor, []);
 
   // Tras subir archivos lleva a las estadísticas (al aplicar filtros no se mueve la página)
   useEffect(() => {
@@ -61,12 +65,16 @@ export default function App() {
   async function ejecutar(files, f) {
     setCargando(true);
     setError("");
+    // Si tarda, lo normal es que el servidor esté arrancando: se avisa al visitante
+    const aviso = setTimeout(() => setLento(true), 8000);
     try {
       setDatos(await analizar(files, f));
       setFiltros(f);
     } catch (e) {
       setError(e.message);
     } finally {
+      clearTimeout(aviso);
+      setLento(false);
       setCargando(false);
     }
   }
@@ -120,6 +128,9 @@ export default function App() {
           </label>
           <div role="status">
             <p className="sr-only">{cargando ? "Analizando tu historial" : datos ? "Estadísticas actualizadas" : ""}</p>
+            {lento && (
+              <p className="estado">Está tardando un poco más de lo normal. Si el servidor llevaba un rato sin uso, puede tardar hasta un minuto en arrancar; no cierres la página.</p>
+            )}
             {datos?.ignorados.length > 0 && (
               <p className="estado">Se ignoraron por no ser historial de audio: {datos.ignorados.join(", ")}</p>
             )}
