@@ -21,7 +21,6 @@ export default function Footer() {
 
         <p className="pie-firma">
           Diseñado y desarrollado por
-          {/* La firma (public/DaNYsZ99_logo.svg) se usa como máscara: toma el color del texto */}
           <a href={AUTOR.enlace} target="_blank" rel="noreferrer" className="pie-firma-logo"
              aria-label={`${AUTOR.nombre} (abre su perfil de GitHub)`} title={AUTOR.nombre}>
             <span aria-hidden="true" />
