@@ -81,9 +81,10 @@ def top_artistas(df: pd.DataFrame, n: int = TOP) -> pd.DataFrame:
     canciones = _por_cancion(df)
     # Canción favorita de cada artista: la de más tiempo. Al ordenar de mayor a
     # menor y quitar duplicados por artista, queda la primera (la mayor).
-    favorita = (
-        canciones.sort_values("ms", ascending=False).drop_duplicates("Artista").set_index("Artista")["Cancion"]
-    )
+    favoritas = canciones.sort_values("ms", ascending=False).drop_duplicates("Artista").set_index("Artista")
+    favorita = favoritas["Cancion"]
+    # URI de esa canción: el frontend la usa para mostrar su portada en las tarjetas para compartir
+    favorita_url = favoritas["URL"]
     g = (
         canciones.groupby("Artista")
         .agg(ms=("ms", "sum"), Reproducciones=("Reproducciones", "sum"),
@@ -93,7 +94,8 @@ def top_artistas(df: pd.DataFrame, n: int = TOP) -> pd.DataFrame:
     g["Minutos"] = (g["ms"] / 60000).round(1)
     g["PctSaltadas"] = (100 * g["Saltadas"] / g["Reproducciones"]).round(0)
     g["Favorita"] = g["Artista"].map(favorita).fillna("")
-    return g.head(n)[["Artista", "Favorita", "Reproducciones", "Minutos", "Canciones", "PctSaltadas"]]
+    g["FavoritaURL"] = g["Artista"].map(favorita_url).fillna("")
+    return g.head(n)[["Artista", "Favorita", "FavoritaURL", "Reproducciones", "Minutos", "Canciones", "PctSaltadas"]]
 
 
 def top_albumes(df: pd.DataFrame, n: int = TOP) -> pd.DataFrame:

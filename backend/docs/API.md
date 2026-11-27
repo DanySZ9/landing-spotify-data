@@ -76,7 +76,7 @@ curl -X POST http://localhost:8000/api/analizar \
     "caracteristicas": {...}, "duracion": {...}, "como_empiezan": {...}, "como_terminan": {...}
   },
   "tablas": {                          // listas de filas; [] si no hay datos
-    "top_artistas":  [{"Artista","Favorita","Reproducciones","Minutos","Canciones","PctSaltadas"}],
+    "top_artistas":  [{"Artista","Favorita","FavoritaURL","Reproducciones","Minutos","Canciones","PctSaltadas"}],
     "top_canciones": [{"Artista","Cancion","Reproducciones","Minutos","Saltadas","PctSaltadas","URL"}],
     "top_albumes":   [{"Album","Artista","Canciones","Reproducciones","Minutos"}],
     "top_podcasts":  [{"Programa","Episodios","Reproducciones","Minutos"}],
