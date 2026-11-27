@@ -81,7 +81,7 @@ export default function Filtros({ opciones, aplicados, onAplicar, cargando }) {
       </details>
 
       <div className="acciones">
-        <button className="primario" onClick={() => onAplicar(f)} disabled={cargando}>Aplicar filtros</button>
+        <button className="primario" onClick={() => onAplicar(f)} disabled={cargando}>{cargando ? "Aplicando…" : "Aplicar filtros"}</button>
         <button className="secundario" onClick={reiniciar} disabled={cargando}>Restablecer</button>
       </div>
     </section>

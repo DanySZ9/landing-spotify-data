@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./Header.css";
 
 const NOMBRE = "Spotlytics"; // cámbialo por el nombre de tu proyecto
@@ -9,12 +9,12 @@ export default function Header({ hayDatos = false }) {
   const [menuAbierto, setMenuAbierto] = useState(false);
 
   // ids de las secciones de la página: main, estadisticas, steps, preguntas
-  const enlaces = [
+  const enlaces = useMemo(() => [
     ["main", "Inicio"],
     ...(hayDatos ? [["estadisticas", "Mis estadísticas"]] : []),
     ["steps", "Pasos"],
     ["preguntas", "Preguntas frecuentes"],
-  ];
+  ], [hayDatos]);
 
   // Fondo difuminado cuando se baja de la parte superior
   useEffect(() => {
@@ -33,7 +33,7 @@ export default function Header({ hayDatos = false }) {
     );
     secciones.forEach((s) => observador.observe(s));
     return () => observador.disconnect();
-  }, [hayDatos]);
+  }, [enlaces]);
 
   // Escape cierra el menú en móvil
   useEffect(() => {
