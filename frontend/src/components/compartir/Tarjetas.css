@@ -1,0 +1,174 @@
+/* ========================
+   TARJETAS PARA COMPARTIR (tamaño real: 1080 px de ancho)
+   ======================== */
+.tc {
+  --tc-acento: #1DB954;
+  --tc-luz-1: rgb(29 185 84 / 0.30);   /* resplandores del fondo */
+  --tc-luz-2: rgb(80 155 245 / 0.14);
+  position: relative; overflow: hidden; isolation: isolate; display: flex; flex-direction: column;
+  width: 1080px; height: 1920px;
+  /* Zonas seguras de las historias: Instagram y TikTok tapan arriba el nombre y la
+     foto de perfil, y abajo la caja de respuesta */
+  padding: 270px 96px 250px;
+  background: #121212; color: #FFFFFF;
+  font-family: "Google Sans Flex", system-ui, sans-serif; line-height: 1.15;
+}
+.tc-cuadrado { height: 1080px; padding: 72px; }
+.tc p { margin: 0; }
+.tc > * { position: relative; z-index: 1; }
+
+/* Fondo: dos resplandores de color, ondas desde una esquina y grano para que no se vea plano.
+   Solo degradados (sin filtros), que html-to-image reproduce igual en todos los navegadores. */
+.tc > .tc-fondo { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.tc-fondo {
+  background:
+    radial-gradient(circle at 88% 12%, var(--tc-luz-1), transparent 46%),
+    radial-gradient(circle at 6% 92%, var(--tc-luz-2), transparent 50%);
+}
+.tc-fondo::before {
+  content: ""; position: absolute; inset: 0;
+  background: repeating-radial-gradient(circle at 100% 0%, transparent 0 58px, rgb(255 255 255 / 0.04) 58px 61px);
+  -webkit-mask: radial-gradient(circle at 100% 0%, #000 0, transparent 75%);
+  mask: radial-gradient(circle at 100% 0%, #000 0, transparent 75%);
+}
+.tc-fondo::after { content: ""; position: absolute; inset: 0; background-image: var(--tc-grano, none); background-size: 160px; }
+
+.tc-marca { display: flex; align-items: center; gap: 16px; font-size: 44px; font-weight: 700; }
+.tc-marca svg { width: 72px; height: 72px; color: var(--tc-acento); }
+.tc-cuadrado .tc-marca { font-size: 36px; }
+.tc-cuadrado .tc-marca svg { width: 56px; height: 56px; }
+
+.tc-centro { flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 0; }
+
+.tc-pie { display: flex; justify-content: space-between; gap: 24px; font-size: 28px; color: #B3B3B3; }
+.tc-url { font-weight: 700; color: #FFFFFF; white-space: nowrap; }
+.tc-cuadrado .tc-pie { font-size: 24px; }
+
+.tc-titulo { font-size: 76px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; margin-bottom: 56px !important; }
+.tc-cuadrado .tc-titulo { font-size: 58px; margin-bottom: 36px !important; }
+.tc-gigante { font-size: 300px; font-weight: 700; letter-spacing: -0.05em; line-height: 0.95; color: var(--tc-acento); }
+.tc-cuadrado .tc-gigante { font-size: 200px; }
+
+/* Portadas de álbum */
+.tc-portada-img {
+  flex: none; display: grid; place-items: center; width: 116px; height: 116px; border-radius: 10px;
+  object-fit: cover; box-shadow: 0 10px 30px rgb(0 0 0 / 0.45);
+}
+.tc-portada-vacia { background: #2A2A2A; color: #B3B3B3; font-size: 56px; font-weight: 700; }
+.tc-cuadrado .tc-portada-img { width: 96px; height: 96px; border-radius: 8px; }
+.tc-cuadrado .tc-portada-vacia { font-size: 44px; }
+
+.tc-item { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.tc-item b, .tc-item small, .tc-compacta b { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.tc-item b { font-size: 50px; font-weight: 700; letter-spacing: -0.01em; }
+.tc-item small { font-size: 34px; color: #B3B3B3; }
+.tc-item small:empty { display: none; }
+.tc-num { flex: none; width: 1.2em; font-size: 48px; font-weight: 700; color: var(--tc-acento); }
+
+/* Nº 1 en grande (solo historia) */
+.tc-prota { display: flex; align-items: center; gap: 44px; margin-bottom: 44px; }
+.tc-prota-imagen { position: relative; flex: none; }
+.tc-prota .tc-portada-img { width: 290px; height: 290px; border-radius: 16px; font-size: 140px; }
+.tc-prota-rank {
+  position: absolute; left: -22px; top: -22px; width: 92px; height: 92px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 52px; font-weight: 700;
+  background: var(--tc-acento); color: #121212; box-shadow: 0 6px 20px rgb(0 0 0 / 0.4);
+}
+.tc-prota .tc-item b {
+  font-size: 72px; line-height: 1.05; white-space: normal;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+}
+.tc-prota .tc-item small { font-size: 40px; }
+
+.tc-filas { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 26px; }
+.tc-filas li { display: flex; align-items: center; gap: 32px; min-width: 0; }
+.tc-cuadrado .tc-filas { gap: 20px; }
+.tc-cuadrado .tc-filas li { gap: 26px; }
+.tc-cuadrado .tc-num { font-size: 38px; }
+.tc-cuadrado .tc-item b { font-size: 42px; }
+.tc-cuadrado .tc-item small { font-size: 28px; }
+
+.tc-credito { margin-top: 36px !important; font-size: 26px; color: #8A8A8A; }
+.tc-cuadrado .tc-credito { margin-top: 20px !important; font-size: 20px; }
+
+/* Lista de solo texto (resumen) */
+.tc-compacta { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 22px; }
+.tc-compacta li { display: flex; align-items: baseline; min-width: 0; }
+.tc-compacta b { font-size: 44px; font-weight: 700; }
+.tc-compacta .tc-num { width: 1.1em; font-size: 44px; }
+.tc-cuadrado .tc-compacta { gap: 14px; }
+.tc-cuadrado .tc-compacta b, .tc-cuadrado .tc-compacta .tc-num { font-size: 32px; }
+
+/* Primera tarjeta: fondo verde con degradado y texto oscuro */
+.tc-portada {
+  --tc-acento: #121212; --tc-luz-1: rgb(200 255 215 / 0.55); --tc-luz-2: rgb(0 70 30 / 0.45);
+  background: #1DB954; color: #121212;
+}
+.tc-portada .tc-fondo::before {
+  background: repeating-radial-gradient(circle at 100% 0%, transparent 0 58px, rgb(0 0 0 / 0.07) 58px 61px);
+}
+.tc-portada .tc-pie, .tc-portada .tc-url { color: #121212; }
+.tc-portada .tc-antetitulo { font-size: 76px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 40px; }
+.tc-portada .tc-gigante { font-size: 340px; }
+.tc-portada .tc-unidad { font-size: 64px; font-weight: 600; margin-top: 16px; }
+.tc-cifras { display: flex; flex-direction: column; gap: 12px; margin-top: 80px; font-size: 48px; }
+.tc-cifras b { font-weight: 700; }
+/* Barras del logo colgando desde arriba: decoran la zona que tapa el perfil en las historias */
+.tc > .tc-deco {
+  position: absolute; z-index: 0; right: -30px; top: -70px; width: 500px; height: 500px;
+  fill: rgb(0 0 0 / 0.12); transform: rotate(180deg);
+}
+.tc-cuadrado.tc-portada .tc-antetitulo { font-size: 56px; margin-bottom: 16px; }
+.tc-cuadrado.tc-portada .tc-gigante { font-size: 230px; }
+.tc-cuadrado.tc-portada .tc-unidad { font-size: 48px; margin-top: 8px; }
+.tc-cuadrado .tc-cifras { flex-direction: row; gap: 48px; margin-top: 48px; font-size: 34px; }
+.tc-cuadrado > .tc-deco { width: 380px; height: 380px; right: -30px; top: auto; bottom: -50px; transform: none; }
+.tc-cuadrado.tc-portada .tc-pie { padding-right: 280px; }
+
+/* Canciones: acento azul para distinguirla de la de artistas */
+.tc-canciones { --tc-acento: #509BF5; --tc-luz-1: rgb(80 155 245 / 0.32); --tc-luz-2: rgb(29 185 84 / 0.14); }
+
+/* Hora favorita: resplandor detrás de la cifra y líneas de rejilla en el fondo */
+.tc-hora .tc-fondo {
+  background:
+    radial-gradient(ellipse 60% 30% at 25% 45%, rgb(29 185 84 / 0.22), transparent 70%),
+    radial-gradient(circle at 88% 92%, rgb(29 185 84 / 0.16), transparent 45%),
+    repeating-linear-gradient(to bottom, transparent 0 118px, rgb(255 255 255 / 0.035) 118px 120px);
+}
+.tc-frase { font-size: 52px; color: #B3B3B3; margin-top: 24px !important; max-width: 820px; line-height: 1.25; }
+.tc-horas { margin-top: 80px; }
+.tc-horas-barras { height: 340px; display: flex; align-items: flex-end; gap: 10px; border-bottom: 3px solid #404040; }
+.tc-horas-barras i { flex: 1; background: #404040; border-radius: 6px 6px 0 0; }
+.tc-horas-barras i.pico { background: var(--tc-acento); box-shadow: 0 0 40px rgb(29 185 84 / 0.6); }
+.tc-horas-ejes { display: flex; justify-content: space-between; margin-top: 16px; font-size: 30px; color: #B3B3B3; }
+.tc-cuadrado .tc-titulo + .tc-gigante { margin-top: -10px; }
+.tc-cuadrado .tc-frase { font-size: 36px; margin-top: 12px !important; }
+.tc-cuadrado .tc-horas { margin-top: 44px; }
+.tc-cuadrado .tc-horas-barras { height: 170px; gap: 6px; }
+.tc-cuadrado .tc-horas-ejes { font-size: 24px; margin-top: 10px; }
+
+/* Resumen: todo en una tarjeta */
+.tc-resumen { --tc-luz-2: rgb(80 155 245 / 0.18); }
+.tc-resumen .tc-titulo { margin-bottom: 40px !important; }
+.tc-historia.tc-resumen .tc-compacta { gap: 16px; }
+.tc-historia.tc-resumen .tc-compacta b, .tc-historia.tc-resumen .tc-compacta .tc-num { font-size: 40px; }
+.tc-historia.tc-resumen .tc-resumen-cifras { margin-bottom: 48px; }
+.tc-historia.tc-resumen .tc-columnas { gap: 44px; }
+.tc-resumen-cifras { display: flex; gap: 40px; margin-bottom: 64px; }
+.tc-resumen-cifras div {
+  flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 32px 40px; border-radius: 28px;
+  background: rgb(255 255 255 / 0.06); border: 2px solid rgb(255 255 255 / 0.08);
+}
+.tc-resumen-cifras small { font-size: 32px; color: #B3B3B3; }
+.tc-resumen-cifras b { font-size: 80px; font-weight: 700; color: var(--tc-acento); letter-spacing: -0.02em; }
+.tc-columnas { display: flex; flex-direction: column; gap: 56px; }
+.tc-columnas > div { min-width: 0; }
+.tc-subtitulo { font-size: 32px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #B3B3B3; margin-bottom: 24px !important; }
+.tc-cuadrado.tc-resumen .tc-titulo { margin-bottom: 28px !important; }
+.tc-cuadrado .tc-resumen-cifras { gap: 28px; margin-bottom: 40px; }
+.tc-cuadrado .tc-resumen-cifras div { padding: 18px 28px; border-radius: 20px; gap: 4px; }
+.tc-cuadrado .tc-resumen-cifras small { font-size: 24px; }
+.tc-cuadrado .tc-resumen-cifras b { font-size: 56px; }
+.tc-cuadrado .tc-columnas { flex-direction: row; gap: 48px; }
+.tc-cuadrado .tc-columnas > div { flex: 1; }
+.tc-cuadrado .tc-subtitulo { font-size: 24px; margin-bottom: 16px !important; }

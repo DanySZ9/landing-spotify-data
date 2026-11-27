@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { analizar, despertarServidor } from "./api.js";
 import { cargarPlot } from "./cargarPlot.js";
 import { FILTROS_INICIALES } from "./filtros.js";
@@ -34,6 +34,9 @@ import Footer from "./components/Footer.jsx";
 import Header from "./components/Header.jsx";
 import PreguntasFrecuentes from "./components/PreguntasFrecuentes.jsx";
 
+// La ventana de compartir (y html-to-image) solo se descarga al abrirla
+const Compartir = lazy(() => import("./components/compartir/Compartir.jsx"));
+
 const PESTANAS = [
   ["cuando", "Cuándo escuchas"],
   ["que", "Qué escuchas"],
@@ -49,6 +52,7 @@ export default function App() {
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
   const [lento, setLento] = useState(false);
+  const [compartiendo, setCompartiendo] = useState(false);
   const resultados = useRef(null);
   const irAResultados = useRef(false);
 
@@ -151,7 +155,20 @@ export default function App() {
                       opciones={datos.opciones} aplicados={filtros} onAplicar={(f) => ejecutar(archivos, f)}
                       cargando={cargando} />
               {error && <p className="estado error" role="alert">{error}</p>}
+              {datos.resumen.reproducciones > 0 && (
+                <div className="barra-compartir">
+                  <button type="button" className="primario boton-compartir" onClick={() => setCompartiendo(true)}>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" /></svg>
+                    Compartir mis estadísticas
+                  </button>
+                </div>
+              )}
               <Resumen datos={datos.resumen} />
+              {compartiendo && (
+                <Suspense fallback={null}>
+                  <Compartir datos={datos} filtros={filtros} onCerrar={() => setCompartiendo(false)} />
+                </Suspense>
+              )}
 
               <div className="pestanas" role="tablist" aria-label="Estadísticas" onKeyDown={alTeclearPestana}>
                 {PESTANAS.map(([id, nombre]) => (
